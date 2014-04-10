@@ -291,8 +291,16 @@ class LuaScriptInterface
 
 		// Get
 		template<typename T>
-		static T getNumber(lua_State* L, int32_t arg)
+		inline static T getNumber(lua_State* L, int32_t arg)
 		{
+			return static_cast<T>(lua_tonumber(L, arg));
+		}
+		template<typename T>
+		static T getNumber(lua_State *L, int32_t arg, T defaultValue)
+		{
+			if (arg > lua_gettop(L)) {
+				return defaultValue;
+			}
 			return static_cast<T>(lua_tonumber(L, arg));
 		}
 		template<class T>
@@ -305,13 +313,24 @@ class LuaScriptInterface
 			return *userdata;
 		}
 		template<class T>
-		static T** getRawUserdata(lua_State* L, int32_t arg)
+		inline static T** getRawUserdata(lua_State* L, int32_t arg)
 		{
 			return static_cast<T**>(lua_touserdata(L, arg));
 		}
 
+		inline static bool getBoolean(lua_State* L, int32_t arg)
+		{
+			return lua_toboolean(L, arg) != 0;
+		}
+		inline static bool getBoolean(lua_State* L, int32_t arg, bool defaultValue)
+		{
+			if (arg > lua_gettop(L)) {
+				return defaultValue;
+			}
+			return lua_toboolean(L, arg) != 0;
+		}
+
 		static std::string getString(lua_State* L, int32_t arg);
-		static bool getBoolean(lua_State* L, int32_t arg);
 		static Position getPosition(lua_State* L, int32_t arg, int32_t& stackpos);
 		static Position getPosition(lua_State* L, int32_t arg);
 		static Outfit_t getOutfit(lua_State* L, int32_t arg);
@@ -330,17 +349,31 @@ class LuaScriptInterface
 
 		static std::string getFieldString(lua_State* L, int32_t arg, const std::string& key);
 
-		// Other
-		static int32_t getStackTop(lua_State* L);
-
 		// Is
-		static bool isNil(lua_State* L, int32_t arg);
-		static bool isNumber(lua_State* L, int32_t arg);
-		static bool isString(lua_State* L, int32_t arg);
-		static bool isBoolean(lua_State* L, int32_t arg);
-		static bool isTable(lua_State* L, int32_t arg);
-		static bool isFunction(lua_State* L, int32_t arg);
-		static bool isUserdata(lua_State* L, int32_t arg);
+		inline static bool isNumber(lua_State* L, int32_t arg)
+		{
+			return lua_isnumber(L, arg) != 0;
+		}
+		inline static bool isString(lua_State* L, int32_t arg)
+		{
+			return lua_isstring(L, arg) != 0;
+		}
+		inline static bool isBoolean(lua_State* L, int32_t arg)
+		{
+			return lua_isboolean(L, arg);
+		}
+		inline static bool isTable(lua_State* L, int32_t arg)
+		{
+			return lua_istable(L, arg);
+		}
+		inline static bool isFunction(lua_State* L, int32_t arg)
+		{
+			return lua_isfunction(L, arg);
+		}
+		inline static bool isUserdata(lua_State* L, int32_t arg)
+		{
+			return lua_isuserdata(L, arg) != 0;
+		}
 
 		// Pop
 		template<typename T>
@@ -672,6 +705,9 @@ class LuaScriptInterface
 		static int32_t luaModalWindowGetId(lua_State* L);
 		static int32_t luaModalWindowGetTitle(lua_State* L);
 		static int32_t luaModalWindowGetMessage(lua_State* L);
+
+		static int32_t luaModalWindowSetTitle(lua_State* L);
+		static int32_t luaModalWindowSetMessage(lua_State* L);
 
 		static int32_t luaModalWindowGetButtonCount(lua_State* L);
 		static int32_t luaModalWindowGetChoiceCount(lua_State* L);

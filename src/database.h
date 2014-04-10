@@ -125,8 +125,6 @@ class Database
 		Database();
 		~Database();
 
-		DBResult_ptr verifyResult(DBResult_ptr result);
-
 		MYSQL* m_handle;
 
 		std::recursive_mutex database_lock;
@@ -165,6 +163,7 @@ class DBResult
 		std::string getDataString(const std::string& s) const;
 		const char* getDataStream(const std::string& s, unsigned long& size) const;
 
+		bool hasNext() const;
 		bool next();
 
 	protected:

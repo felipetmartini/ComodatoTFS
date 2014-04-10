@@ -69,9 +69,8 @@ Npc* Npc::createNpc(const std::string& name)
 }
 
 Npc::Npc(const std::string& _name) :
-	Creature()
+	Creature(), m_filename("data/npc/" + _name + ".xml")
 {
-	m_filename = "data/npc/" + _name + ".xml";
 	loaded = false;
 
 	masterRadius = -1;
@@ -126,6 +125,7 @@ void Npc::reset()
 	walkTicks = 1500;
 	floorChange = false;
 	attackable = false;
+	ignoreHeight = true;
 	focusCreature = 0;
 	speechBubble = SPEECHBUBBLE_NONE;
 
@@ -183,6 +183,10 @@ bool Npc::loadFromXml(const std::string& filename)
 
 	if ((attr = npcNode.attribute("walkradius"))) {
 		masterRadius = pugi::cast<int32_t>(attr.value());
+	}
+
+	if ((attr = npcNode.attribute("ignoreheight"))) {
+		ignoreHeight = attr.as_bool();
 	}
 
 	if ((attr = npcNode.attribute("speechbubble"))) {
@@ -424,6 +428,10 @@ bool Npc::canWalkTo(const Position& fromPos, Direction dir)
 	}
 
 	if (!floorChange && (tile->floorChange() || tile->getTeleportItem())) {
+		return false;
+	}
+
+	if (!ignoreHeight && tile->hasHeight(1)) {
 		return false;
 	}
 
@@ -1059,12 +1067,12 @@ int32_t NpcScriptInterface::luaNpcOpenShopWindow(lua_State* L)
 	}
 
 	int32_t sellCallback = -1;
-	if (isFunction(L, 5)) {
+	if (LuaScriptInterface::isFunction(L, 5)) {
 		sellCallback = luaL_ref(L, LUA_REGISTRYINDEX);
 	}
 
 	int32_t buyCallback = -1;
-	if (isFunction(L, 4)) {
+	if (LuaScriptInterface::isFunction(L, 4)) {
 		buyCallback = luaL_ref(L, LUA_REGISTRYINDEX);
 	}
 
