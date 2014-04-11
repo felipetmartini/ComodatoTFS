@@ -63,7 +63,7 @@ class AStarNodes
 		int_fast32_t getClosedNodes() const;
 		AStarNode* getNodeByPosition(uint32_t x, uint32_t y);
 
-		static int_fast32_t getMapWalkCost(AStarNode* node, const Position& neighbourPos);
+		static int_fast32_t getMapWalkCost(AStarNode* node, const Position& neighborPos);
 		static int_fast32_t getTileWalkCost(const Creature& creature, const Tile* tile);
 
 	private:
@@ -208,7 +208,7 @@ class Map
 		  * Remove a creature from the map.
 		  * \param c Creature pointer to the creature to remove
 		  */
-		bool removeCreature(Creature* c);
+		static bool removeCreature(Creature* c);
 
 		/**
 		  * Checks if you can throw an object to that position
