@@ -3147,10 +3147,6 @@ void Game::playerLookInBattleList(uint32_t playerId, uint32_t creatureId)
 	} else {
 		lookDistance = -1;
 	}
-	
-	if (!g_events->eventPlayerOnLook(player, creaturePos, creature, 0, lookDistance)) {
-		return;
-	}
 
 	g_events->eventPlayerOnLookInBattleList(player, creature, lookDistance);
 }
