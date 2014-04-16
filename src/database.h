@@ -125,6 +125,8 @@ class Database
 		Database();
 		~Database();
 
+		DBResult_ptr verifyResult(DBResult_ptr result);
+
 		MYSQL* m_handle;
 
 		std::recursive_mutex database_lock;

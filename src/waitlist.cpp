@@ -77,8 +77,8 @@ bool WaitingList::clientLogin(const Player* player)
 		return true;
 	}
 
-	WaitingList::cleanupList(priorityWaitList);
-	WaitingList::cleanupList(waitList);
+	cleanupList(priorityWaitList);
+	cleanupList(waitList);
 
 	uint32_t slot;
 

@@ -69,8 +69,9 @@ Npc* Npc::createNpc(const std::string& name)
 }
 
 Npc::Npc(const std::string& _name) :
-	Creature(), m_filename("data/npc/" + _name + ".xml")
+	Creature()
 {
+	m_filename = "data/npc/" + _name + ".xml";
 	loaded = false;
 
 	masterRadius = -1;

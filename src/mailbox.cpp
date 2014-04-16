@@ -40,7 +40,7 @@ Mailbox::~Mailbox()
 ReturnValue Mailbox::__queryAdd(int32_t, const Thing* thing, uint32_t, uint32_t, Creature*) const
 {
 	const Item* item = thing->getItem();
-	if (item && Mailbox::canSend(item)) {
+	if (item && canSend(item)) {
 		return RET_NOERROR;
 	}
 	return RET_NOTPOSSIBLE;
@@ -70,7 +70,7 @@ void Mailbox::__addThing(Thing* thing)
 void Mailbox::__addThing(int32_t, Thing* thing)
 {
 	Item* item = thing->getItem();
-	if (item && Mailbox::canSend(item)) {
+	if (item && canSend(item)) {
 		sendItem(item);
 	}
 }
@@ -100,7 +100,7 @@ void Mailbox::postRemoveNotification(Thing* thing, const Cylinder* newParent, in
 	getParent()->postRemoveNotification(thing, newParent, index, isCompleteRemoval, LINK_PARENT);
 }
 
-bool Mailbox::sendItem(Item* item) const
+bool Mailbox::sendItem(Item* item)
 {
 	std::string receiver;
 	if (!getReceiver(item, receiver)) {
@@ -136,7 +136,7 @@ bool Mailbox::sendItem(Item* item) const
 	return false;
 }
 
-bool Mailbox::getReceiver(Item* item, std::string& name) const
+bool Mailbox::getReceiver(Item* item, std::string& name)
 {
 	const Container* container = item->getContainer();
 	if (container) {
@@ -158,7 +158,7 @@ bool Mailbox::getReceiver(Item* item, std::string& name) const
 	return true;
 }
 
-bool Mailbox::canSend(const Item* item)
+bool Mailbox::canSend(const Item* item) const
 {
 	return item->getID() == ITEM_PARCEL || item->getID() == ITEM_LETTER;
 }

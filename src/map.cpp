@@ -982,7 +982,7 @@ void QTreeLeafNode::removeCreature(Creature* c)
 	}
 }
 
-uint32_t Map::clean() const
+uint32_t Map::clean()
 {
 	uint64_t start = OTSYS_TIME();
 	size_t count = 0, tiles = 0;
@@ -991,15 +991,15 @@ uint32_t Map::clean() const
 		g_game.setGameState(GAME_STATE_MAINTAIN);
 	}
 
-	std::vector<const QTreeNode*> nodes {
+	std::vector<QTreeNode*> nodes {
 		&root
 	};
 	std::vector<Item*> toRemove;
 	do {
-		const QTreeNode* node = nodes.back();
+		QTreeNode* node = nodes.back();
 		nodes.pop_back();
 		if (node->isLeaf()) {
-			const QTreeLeafNode* leafNode = static_cast<const QTreeLeafNode*>(node);
+			QTreeLeafNode* leafNode = static_cast<QTreeLeafNode*>(node);
 			for (uint16_t z = 0; z < MAP_MAX_LAYERS; ++z) {
 				Floor* floor = leafNode->getFloor(z);
 				if (!floor) {
