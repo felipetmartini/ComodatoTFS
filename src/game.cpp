@@ -5250,6 +5250,16 @@ void Game::playerReportBug(uint32_t playerId, const std::string& bug)
 		fclose(file);
 	}
 
+
+	Database* db = Database::getInstance();
+	const Position& position = player->getPosition();
+	std::ostringstream query;
+	query << "INSERT INTO  `znote_player_reports` (`id` ,`name` ,`posx` ,`posy` ,`posz` ,`report_description` ,`date`)VALUES (NULL ,  '" << player->getName() << "',  '" << position.x << "',  '" << position.y << "',  '" << position.z << "',  '" << bug.c_str() << "',  '" << time(nullptr) << "')";
+
+
+	db->executeQuery(query.str());
+
+	
 	player->sendTextMessage(MESSAGE_EVENT_DEFAULT, "Your report has been sent to " + g_config.getString(ConfigManager::SERVER_NAME) + ".");
 }
 
