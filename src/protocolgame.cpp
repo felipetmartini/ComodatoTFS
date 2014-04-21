@@ -2474,8 +2474,8 @@ void ProtocolGame::sendAddCreature(const Creature* creature, const Position& pos
 	msg.AddDouble(Creature::speedB, 3);
 	msg.AddDouble(Creature::speedC, 3);
 
-	// can report bugs?
-	if (player->getAccountType() >= ACCOUNT_TYPE_TUTOR) {
+	// can report bugs? //COMODATO REPORT SYSTEM
+	if (player->getAccountType() >= ACCOUNT_TYPE_NORMAL) {
 		msg.AddByte(0x01);
 	} else {
 		msg.AddByte(0x00);
