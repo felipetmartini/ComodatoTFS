@@ -256,7 +256,7 @@ std::string Player::getDescription(int32_t lookDistance) const
 		s << "yourself.";
 
 		if (group->access) {
-			if (player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
+			if (getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
 				s << " You are " << group->name << '.';
 				s << " You are " << vocation->getVocDescription() << '.';
 			} else {
@@ -281,7 +281,7 @@ std::string Player::getDescription(int32_t lookDistance) const
 		}
 
 		if (group->access) {
-			if (player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
+			if (getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
 				s << " is " << group->name << '.';
 				s << " is " << vocation->getVocDescription() << '.';
 			} else {
