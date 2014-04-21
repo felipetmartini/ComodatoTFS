@@ -5238,7 +5238,9 @@ void Game::playerReportBug(uint32_t playerId, const std::string& bug)
 		return;
 	}
 
-
+	//COMODATO REPORT SYSTEM if (player->getAccountType() == ACCOUNT_TYPE_NORMAL) {
+	//COMODATO REPORT SYSTEM 	return;
+	//COMODATO REPORT SYSTEM }
 
 	std::string fileName = "data/reports/" + player->getName() + " report.txt";
 	FILE* file = fopen(fileName.c_str(), "a");
@@ -5400,6 +5402,7 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 
 	if (type == MARKETACTION_SELL) {
 		if (fee > player->bankBalance) {
+			player->sendTextMessage(MESSAGE_EVENT_DEFAULT, "You need more fee, go to bank npc and make a deposit to up your fee.");
 			return;
 		}
 
@@ -5496,6 +5499,7 @@ void Game::playerCreateMarketOffer(uint32_t playerId, uint8_t type, uint16_t spr
 		uint64_t totalPrice = (uint64_t)price * amount;
 		totalPrice += fee;
 		if (totalPrice > player->bankBalance) {
+			player->sendTextMessage(MESSAGE_EVENT_DEFAULT, "You need more fee, go to bank npc and make a deposit to up your fee.");
 			return;
 		}
 
