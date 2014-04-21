@@ -5238,9 +5238,7 @@ void Game::playerReportBug(uint32_t playerId, const std::string& bug)
 		return;
 	}
 
-	if (player->getAccountType() == ACCOUNT_TYPE_NORMAL) {
-		return;
-	}
+
 
 	std::string fileName = "data/reports/" + player->getName() + " report.txt";
 	FILE* file = fopen(fileName.c_str(), "a");
