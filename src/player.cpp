@@ -287,7 +287,6 @@ std::string Player::getDescription(int32_t lookDistance) const
 			} else {
 				s << " is " << group->name << '.';
 			}
-			s << " is " << group->name << '.';
 		} else if (vocation->getId() != VOCATION_NONE) {
 			s << " is " << vocation->getVocDescription() << '.';
 		} else {
