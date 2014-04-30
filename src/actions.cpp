@@ -232,14 +232,14 @@ ReturnValue Actions::canUse(const Player* player, const Position& pos, const Ite
 	return RET_NOERROR;
 }
 
-ReturnValue Actions::canUseFar(const Creature* creature, const Position& toPos, bool checkLineOfSight, bool checkFloor)
+ReturnValue Actions::canUseFar(const Creature* creature, const Position& toPos, bool checkLineOfSight)
 {
 	if (toPos.x == 0xFFFF) {
 		return RET_NOERROR;
 	}
 
 	const Position& creaturePos = creature->getPosition();
-	if (checkFloor && creaturePos.z != toPos.z) {
+	if (creaturePos.z != toPos.z) {
 		return creaturePos.z > toPos.z ? RET_FIRSTGOUPSTAIRS : RET_FIRSTGODOWNSTAIRS;
 	}
 
@@ -458,7 +458,6 @@ Action::Action(LuaScriptInterface* _interface) :
 	Event(_interface)
 {
 	allowFarUse = false;
-	checkFloor = true;
 	checkLineOfSight = true;
 	function = nullptr;
 }
@@ -487,12 +486,6 @@ bool Action::configureEvent(const pugi::xml_node& node)
 	if (blockWallsAttr) {
 		setCheckLineOfSight(blockWallsAttr.as_bool());
 	}
-
-	pugi::xml_attribute checkFloorAttr = node.attribute("checkfloor");
-	if (checkFloorAttr) {
-		setCheckFloor(checkFloorAttr.as_bool());
-	}
-
 	return true;
 }
 
@@ -548,7 +541,7 @@ ReturnValue Action::canExecuteAction(const Player* player, const Position& toPos
 	if (!getAllowFarUse()) {
 		return g_actions->canUse(player, toPos);
 	} else {
-		return g_actions->canUseFar(player, toPos, getCheckLineOfSight(), getCheckFloor());
+		return g_actions->canUseFar(player, toPos, getCheckLineOfSight());
 	}
 }
 

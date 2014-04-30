@@ -55,13 +55,6 @@ class Action : public Event
 			checkLineOfSight = v;
 		}
 
-		bool getCheckFloor() const {
-			return checkFloor;
-		}
-		void setCheckFloor(bool v) {
-			checkFloor = v;
-		}
-
 		virtual ReturnValue canExecuteAction(const Player* player, const Position& toPos);
 		virtual bool hasOwnErrorHandler() {
 			return false;
@@ -77,7 +70,6 @@ class Action : public Event
 		static ActionFunction enterMarket;
 
 		bool allowFarUse;
-		bool checkFloor;
 		bool checkLineOfSight;
 };
 
@@ -92,7 +84,7 @@ class Actions : public BaseEvents
 
 		ReturnValue canUse(const Player* player, const Position& pos);
 		ReturnValue canUse(const Player* player, const Position& pos, const Item* item);
-		ReturnValue canUseFar(const Creature* creature, const Position& toPos, bool checkLineOfSight, bool checkFloor);
+		ReturnValue canUseFar(const Creature* creature, const Position& toPos, bool checkLineOfSight);
 
 		bool hasAction(const Item* item);
 
