@@ -53,10 +53,6 @@ extern Actions actions;
 extern CreatureEvents* g_creatureEvents;
 Chat g_chat;
 
-#ifdef ENABLE_SERVER_DIAGNOSTIC
-uint32_t ProtocolGame::protocolGameCount = 0;
-#endif
-
 // Helping templates to add dispatcher tasks
 template<class FunctionType>
 void ProtocolGame::addGameTaskInternal(bool droppable, uint32_t delay, const FunctionType& func)
@@ -78,17 +74,12 @@ ProtocolGame::ProtocolGame(Connection_ptr connection) :
 	m_debugAssertSent(false),
 	m_acceptPackets(false)
 {
-#ifdef ENABLE_SERVER_DIAGNOSTIC
-	protocolGameCount++;
-#endif
+	//
 }
 
 ProtocolGame::~ProtocolGame()
 {
 	player = nullptr;
-#ifdef ENABLE_SERVER_DIAGNOSTIC
-	protocolGameCount--;
-#endif
 }
 
 void ProtocolGame::setPlayer(Player* p)
@@ -2803,10 +2794,6 @@ void ProtocolGame::sendVIP(uint32_t guid, const std::string& name, const std::st
 
 void ProtocolGame::sendSpellCooldown(uint8_t spellId, uint32_t time)
 {
-	if (spellId == 0 || spellId > 160) { // TODO: define max spells somewhere
-		return;
-	}
-
 	NetworkMessage msg;
 	msg.AddByte(0xA4);
 	msg.AddByte(spellId);
