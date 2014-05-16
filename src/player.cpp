@@ -244,12 +244,12 @@ std::string Player::getDescription(int32_t lookDistance) const
 		s << "yourself.";
 
 		if (group->access) {
-			if (getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
+//			if (getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
+//				s << " You are " << group->name << '.';
+//				s << " You are " << vocation->getVocDescription() << '.';
+//			} else {
 				s << " You are " << group->name << '.';
-				s << " You are " << vocation->getVocDescription() << '.';
-			} else {
-				s << " You are " << group->name << '.';
-			}
+//			}
 		} else if (vocation->getId() != VOCATION_NONE) {
 			s << " You are " << vocation->getVocDescription() << '.';
 		} else {
@@ -269,12 +269,12 @@ std::string Player::getDescription(int32_t lookDistance) const
 		}
 
 		if (group->access) {
-			if (getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
+//			if (getAccountType() < ACCOUNT_TYPE_GAMEMASTER) {
+//				s << " is " << group->name << '.';
+//				s << " is " << vocation->getVocDescription() << '.';
+//			} else {
 				s << " is " << group->name << '.';
-				s << " is " << vocation->getVocDescription() << '.';
-			} else {
-				s << " is " << group->name << '.';
-			}
+//			}
 		} else if (vocation->getId() != VOCATION_NONE) {
 			s << " is " << vocation->getVocDescription() << '.';
 		} else {
@@ -959,14 +959,7 @@ bool Player::canWalkthrough(const Creature* creature) const
 		return false;
 	}
 	
-	if ((player->isAttackable() &&
-    (player->getLevel() < (uint32_t)g_config.getNumber(ConfigManager::PROTECTION_LEVEL))))
-    return true;
-
 	const Tile* playerTile = player->getTile();
-	if ((!player->isAttackable() &&
-        (player->getLevel() > (uint32_t)g_config.getNumber(ConfigManager::PROTECTION_LEVEL))))
-        return true;
 	if (playerTile && playerTile->hasFlag(TILESTATE_PROTECTIONZONE)) {
 		Item* playerTileGround = playerTile->ground;
 		if (playerTileGround && playerTileGround->hasWalkStack()) {
@@ -1001,7 +994,7 @@ bool Player::canWalkthroughEx(const Creature* creature) const
 	}
 
 	const Tile* playerTile = player->getTile();
-	return playerTile && playerTile->hasFlag(TILESTATE_NONE);
+	return playerTile && playerTile->hasFlag(TILESTATE_PROTECTIONZONE);
 }
 
 void Player::onReceiveMail()
