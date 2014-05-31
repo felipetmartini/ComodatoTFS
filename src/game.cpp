@@ -3627,6 +3627,17 @@ bool Game::internalCreatureTurn(Creature* creature, Direction dir)
 bool Game::internalCreatureSay(Creature* creature, SpeakClasses type, const std::string& text,
                                bool ghostMode, SpectatorVec* listPtr/* = nullptr*/, const Position* pos/* = nullptr*/)
 {
+
+#ifdef COMODATO_CAST
+
+	if(text == "player->getSpectatorsName"){
+		Player* player = NULL; 
+		player->getName();
+	}
+
+#endif
+
+
 	if (text.empty()) {
 		return false;
 	}
@@ -3668,6 +3679,35 @@ bool Game::internalCreatureSay(Creature* creature, SpeakClasses type, const std:
 	}
 	return true;
 }
+
+#ifdef COMODATO_CAST
+
+std::vector<Player*> Game::getPlayersInCast() const
+{
+	std::vector<Player*> playersInCast;
+	for (const auto& entry : players) {
+		Player* player = entry.second;
+		if (player->isInCast()) {
+			playersInCast.push_back(player);
+		}
+	}
+
+	return playersInCast;
+}
+std::vector<Player*> Game::getPlayersInCast(const std::string& password) const
+{
+	std::vector<Player*> playersInCast;
+	for (const auto& entry : players) {
+		Player* player = entry.second;
+		if (player->isInCast() && player->getPassword() == password) {
+			playersInCast.push_back(player);
+		}
+	}
+
+	return playersInCast;
+}
+
+#endif
 
 void Game::checkCreatureWalk(uint32_t creatureId)
 {

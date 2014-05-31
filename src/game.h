@@ -106,7 +106,10 @@ class Game
 			width = map.mapWidth;
 			height = map.mapHeight;
 		}
-
+#ifdef COMODATO_CAST
+		std::vector<Player*> getPlayersInCast() const;
+		std::vector<Player*> getPlayersInCast(const std::string& password) const;
+#endif
 		void setWorldType(WorldType_t type);
 		WorldType_t getWorldType() const {
 			return worldType;
