@@ -172,16 +172,8 @@ class Player : public Creature, public Cylinder
 		void dismount();
 
 		void sendFYIBox(const std::string& message) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-		for (auto& client : clients) { 
-#else
 			if (client) {
-#endif
 				client->sendFYIBox(message);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 
@@ -299,19 +291,11 @@ class Player : public Creature, public Cylinder
 		}
 
 		uint16_t getProtocolVersion() const {
-#ifdef COMODATO_CAST
-			if (clients.size() == 0) {
-#else
 			if (!client) {
-#endif
 				return 0;
 			}
 
-#ifdef COMODATO_CAST
-			return clients.front()->getVersion();
-#else
 			return client->getVersion();
-#endif
 		}
 
 		secureMode_t getSecureMode() const {
@@ -363,19 +347,8 @@ class Player : public Creature, public Cylinder
 			return (getID() == 0);
 		}
 		void disconnect() {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-
-				for (auto& client : clients) {
-
-#else
 			if (client) {
-#endif
 				client->disconnect();
-#ifdef COMODATO_CAST
-				}
-#endif
-
 			}
 		}
 		uint32_t getIP() const;
@@ -712,20 +685,9 @@ class Player : public Creature, public Cylinder
 			skull = newSkull;
 		}
 		void sendCreatureSkull(const Creature* creature) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-
-				for (auto& client : clients) {
-
-					client->sendCreatureSkull(creature);
-
-					
-				}			}
-#else
 			if (client) {
 				client->sendCreatureSkull(creature);
 			}
-#endif
 		}
 		void checkSkullTicks(int32_t ticks);
 
@@ -740,399 +702,158 @@ class Player : public Creature, public Cylinder
 		//tile
 		//send methods
 		void sendAddTileItem(const Tile* tile, const Position& pos, const Item* item) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-#else
 			if (client) {
-#endif
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-#endif
-					int32_t stackpos = tile->getStackposOfThing(this, item);
-					if (stackpos != -1) {
-							client->sendAddTileItem(pos, stackpos, item);
-#ifdef COMODATO_CAST
-					}
-#endif
-					}
+				int32_t stackpos = tile->getStackposOfThing(this, item);
+				if (stackpos != -1) {
+					client->sendAddTileItem(pos, stackpos, item);
+				}
 			}
 		}
 		void sendUpdateTileItem(const Tile* tile, const Position& pos, const Item* item) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				int32_t stackpos = tile->getStackposOfThing(this, item);
 				if (stackpos != -1) {
 					client->sendUpdateTileItem(pos, stackpos, item);
-
 				}
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
-
 		}
-		
-
 		void sendRemoveTileThing(const Position& pos, int32_t stackpos) {
-#ifdef COMODATO_CAST
-			if (stackpos != -1 && clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (stackpos != -1 && client) {
-#endif
 				client->sendRemoveTileThing(pos, stackpos);
-
-#ifdef COMODATO_CAST
-				}
-#endif			
 			}
-
 		}
-
 		void sendUpdateTile(const Tile* tile, const Position& pos) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendUpdateTile(tile, pos);
-#ifdef COMODATO_CAST
 			}
-#endif
-			}
-
 		}
-
 
 		void sendChannelMessage(const std::string& author, const std::string& text, SpeakClasses type, uint16_t channel) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendChannelMessage(author, text, type, channel);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
-
 		void sendChannelEvent(uint16_t channelId, const std::string& playerName, ChannelEvent_t channelEvent) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendChannelEvent(channelId, playerName, channelEvent);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureAppear(const Creature* creature, const Position& pos, bool isLogin) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendAddCreature(creature, pos, creature->getTile()->getStackposOfCreature(this, creature), isLogin);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureMove(const Creature* creature, const Position& newPos, int32_t newStackPos, const Position& oldPos, int32_t oldStackPos, bool teleport) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMoveCreature(creature, newPos, newStackPos, oldPos, oldStackPos, teleport);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureTurn(const Creature* creature) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0 && canSeeCreature(creature)) {
-				for (auto& client : clients) {
-#else
 			if (client && canSeeCreature(creature)) {
-#endif
 				int32_t stackpos = creature->getTile()->getStackposOfCreature(this, creature);
 				if (stackpos != -1) {
 					client->sendCreatureTurn(creature, stackpos);
-#ifdef COMODATO_CAST
-				}
-#endif
 				}
 			}
 		}
 		void sendCreatureSay(const Creature* creature, SpeakClasses type, const std::string& text, const Position* pos = nullptr) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureSay(creature, type, text, pos);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendPrivateMessage(const Player* speaker, SpeakClasses type, const std::string& text) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendPrivateMessage(speaker, type, text);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureSquare(const Creature* creature, SquareColor_t color) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureSquare(creature, color);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureChangeOutfit(const Creature* creature, const Outfit_t& outfit) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
-	
 				client->sendCreatureOutfit(creature, outfit);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureChangeVisible(const Creature* creature, bool visible) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-#else
 			if (!client) {
-#endif
 				return;
 			}
 
 			if (creature->getPlayer()) {
 				if (visible) {
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-#endif
 					client->sendCreatureOutfit(creature, creature->getCurrentOutfit());
-#ifdef COMODATO_CAST
-					}
-#endif
 				} else {
 					static Outfit_t outfit;
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-#endif
 					client->sendCreatureOutfit(creature, outfit);
-#ifdef COMODATO_CAST
-					}
-#endif
 				}
-
 			} else if (canSeeInvisibility()) {
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-#endif
 				client->sendCreatureOutfit(creature, creature->getCurrentOutfit());
-#ifdef COMODATO_CAST
-					}
-#endif
 			} else {
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-#endif
 				int32_t stackpos = creature->getTile()->getStackposOfCreature(this, creature);
 				if (stackpos == -1) {
 					return;
-#ifdef COMODATO_CAST
-					}
-#endif
-                                 }
+				}
 
 				if (visible) {
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-					int32_t stackpos = creature->getTile()->getStackposOfCreature(this, creature);
-#endif
 					client->sendAddCreature(creature, creature->getPosition(), stackpos, false);
-#ifdef COMODATO_CAST
-					}
-#endif
 				} else {
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-						int32_t stackpos = creature->getTile()->getStackposOfCreature(this, creature);
-#endif
 					client->sendRemoveTileThing(creature->getPosition(), stackpos);
-#ifdef COMODATO_CAST
-					}
-#endif
 				}
 			}
 		}
 		void sendCreatureLight(const Creature* creature) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureLight(creature);
-#ifdef COMODATO_CAST
-					}
-#endif
-
 			}
 		}
 		void sendCreatureWalkthrough(const Creature* creature, bool walkthrough) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureWalkthrough(creature, walkthrough);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureShield(const Creature* creature) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureShield(creature);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureType(uint32_t creatureId, uint8_t creatureType) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureType(creatureId, creatureType);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureHelpers(uint32_t creatureId, uint16_t helpers) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureHelpers(creatureId, helpers);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendSpellCooldown(uint8_t spellId, uint32_t time) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendSpellCooldown(spellId, time);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendSpellGroupCooldown(SpellGroup_t groupId, uint32_t time) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendSpellGroupCooldown(groupId, time);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 
 		void sendDamageMessage(MessageClasses mclass, const std::string& message, const Position& pos,
 		                       uint32_t primaryDamage = 0, TextColor_t primaryColor = TEXTCOLOR_NONE,
 		                       uint32_t secondaryDamage = 0, TextColor_t secondaryColor = TEXTCOLOR_NONE) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendDamageMessage(mclass, message, pos, primaryDamage, primaryColor, secondaryDamage, secondaryColor);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendHealMessage(MessageClasses mclass, const std::string& message, const Position& pos, uint32_t heal, TextColor_t color) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendHealMessage(mclass, message, pos, heal, color);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendExperienceMessage(MessageClasses mclass, const std::string& message, const Position& pos, uint32_t exp, TextColor_t color) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendExperienceMessage(mclass, message, pos, exp, color);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendModalWindow(const ModalWindow& modalWindow);
@@ -1142,31 +863,15 @@ class Player : public Creature, public Cylinder
 		void sendUpdateContainerItem(const Container* container, uint16_t slot, const Item* newItem);
 		void sendRemoveContainerItem(const Container* container, uint16_t slot);
 		void sendContainer(uint8_t cid, const Container* container, bool hasParent, uint16_t firstIndex) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendContainer(cid, container, hasParent, firstIndex);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 
 		//inventory
 		void sendInventoryItem(slots_t slot, const Item* item) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendInventoryItem(slot, item);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 
@@ -1198,583 +903,230 @@ class Player : public Creature, public Cylinder
 		void onRemoveInventoryItem(Item* item);
 
 		void sendCancel(const std::string& msg) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendTextMessage(MESSAGE_STATUS_SMALL, msg);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCancelMessage(ReturnValue message) const;
 		void sendCancelTarget() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCancelTarget();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCancelWalk() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCancelWalk();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendChangeSpeed(const Creature* creature, uint32_t newSpeed) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendChangeSpeed(creature, newSpeed);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCreatureHealth(const Creature* creature) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatureHealth(creature);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendDistanceShoot(const Position& from, const Position& to, unsigned char type) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendDistanceShoot(from, to, type);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendHouseWindow(House* house, uint32_t listId) const;
 		void sendCreatePrivateChannel(uint16_t channelId, const std::string& channelName) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCreatePrivateChannel(channelId, channelName);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendClosePrivate(uint16_t channelId);
 		void sendIcons() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendIcons(getClientIcons());
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMagicEffect(const Position& pos, uint8_t type) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMagicEffect(pos, type);
-#ifdef COMODATO_CAST
-				}
-#endif
-
 			}
 		}
 		void sendPing();
 		void sendPingBack() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendPingBack();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendStats();
 		void sendBasicData() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendBasicData();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendSkills() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendSkills();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendTextMessage(MessageClasses mclass, const std::string& message, Position* pos = nullptr, uint32_t value = 0, TextColor_t color = TEXTCOLOR_NONE) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendTextMessage(mclass, message, pos, value, color);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendTextMessage(const TextMessage& message) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendTextMessage(message);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendReLoginWindow(uint8_t unfairFightReduction) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendReLoginWindow(unfairFightReduction);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendTextWindow(Item* item, uint16_t maxlen, bool canWrite) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendTextWindow(windowTextId, item, maxlen, canWrite);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendTextWindow(uint32_t itemId, const std::string& text) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendTextWindow(windowTextId, itemId, text);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendToChannel(const Creature* creature, SpeakClasses type, const std::string& text, uint16_t channelId) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendToChannel(creature, type, text, channelId);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendShop(Npc* npc) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendShop(npc, shopItemList);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendSaleItemList() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendSaleItemList(shopItemList);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCloseShop() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCloseShop();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketEnter(uint32_t depotId) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketEnter(depotId);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketLeave() {
 			inMarket = false;
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketLeave();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketBrowseItem(uint16_t itemId, const MarketOfferList& buyOffers, const MarketOfferList& sellOffers) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketBrowseItem(itemId, buyOffers, sellOffers);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketBrowseOwnOffers(const MarketOfferList& buyOffers, const MarketOfferList& sellOffers) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketBrowseOwnOffers(buyOffers, sellOffers);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketBrowseOwnHistory(const HistoryMarketOfferList& buyOffers, const HistoryMarketOfferList& sellOffers) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketBrowseOwnHistory(buyOffers, sellOffers);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketDetail(uint16_t itemId) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketDetail(itemId);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketAcceptOffer(const MarketOfferEx& offer) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketAcceptOffer(offer);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendMarketCancelOffer(const MarketOfferEx& offer) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendMarketCancelOffer(offer);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendTradeItemRequest(const Player* player, const Item* item, bool ack) const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendTradeItemRequest(player, item, ack);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendTradeClose() const {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCloseTrade();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendWorldLight(const LightInfo& lightInfo) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendWorldLight(lightInfo);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendChannelsDialog() {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendChannelsDialog();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendOpenPrivateChannel(const std::string& receiver) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendOpenPrivateChannel(receiver);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendOutfitWindow() {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendOutfitWindow();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendCloseContainer(uint8_t cid) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendCloseContainer(cid);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 
 		void sendChannel(uint16_t channelId, const std::string& channelName, const UsersMap* channelUsers, const InvitedMap* invitedUsers) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendChannel(channelId, channelName, channelUsers, invitedUsers);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendTutorial(uint8_t tutorialId) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendTutorial(tutorialId);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendAddMarker(const Position& pos, uint8_t markType, const std::string& desc) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendAddMarker(pos, markType, desc);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendQuestLog() {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendQuestLog();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendQuestLine(const Quest* quest) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendQuestLine(quest);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendEnterWorld() {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendEnterWorld();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendFightModes() {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->sendFightModes();
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 		void sendNetworkMessage(const NetworkMessage& message) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-#else
 			if (client) {
-#endif
 				client->writeToOutputBuffer(message);
-#ifdef COMODATO_CAST
-				}
-#endif
 			}
 		}
 
@@ -1807,29 +1159,6 @@ class Player : public Creature, public Cylinder
 		void learnInstantSpell(const std::string& name);
 		void forgetInstantSpell(const std::string& name);
 		bool hasLearnedInstantSpell(const std::string& name) const;
-#ifdef COMODATO_CAST
-		bool isInCast() const {
-			return inCast;
-		}
-		void setInCast(bool value);
-		const std::string& getPassword() const {
-			return password;
-		}
-		void setPassword(const std::string& value) {
-			password = value;
-		}
-
-		uint8_t getViewers() const {
-			return static_cast<uint8_t>(clients.size());
-		}
-		uint32_t getViews(bool increase = false) {
-			if (increase) {
-				views++;
-			}
-
-			return views;
-		}
-#endif
 
 	protected:
 		void checkTradeState(const Item* item);
@@ -1893,16 +1222,10 @@ class Player : public Creature, public Cylinder
 		std::forward_list<Party*> invitePartyList;
 		std::forward_list<uint32_t> modalWindows;
 		std::forward_list<std::string> learnedInstantSpellList;
-#ifdef COMODATO_CAST
-		std::list<ProtocolGame*> clients;
-#endif
 		std::forward_list<Condition*> storedConditionList; // TODO: This variable is only temporarily used when logging in, get rid of it somehow
 
 		std::string name;
 		std::string guildNick;
-#ifdef COMODATO_CAST
-		std::string password;
-#endif
 
 		LightInfo itemsLight;
 		Position loginPosition;
@@ -1977,9 +1300,6 @@ class Player : public Creature, public Cylinder
 		int32_t offlineTrainingSkill;
 		int32_t offlineTrainingTime;
 		int32_t idleTime;
-#ifdef COMODATO_CAST
-		uint32_t views;
-#endif
 		int32_t shootRange;
 
 		AccountType_t accountType;
@@ -2007,9 +1327,7 @@ class Player : public Creature, public Cylinder
 		bool isConnecting;
 		bool addAttackSkillPoint;
 		bool inventoryAbilities[CONST_SLOT_LAST + 1];
-#ifdef COMODATO_CAST
-		bool inCast;
-#endif
+
 		static uint32_t playerAutoID;
 
 		void updateItemsLight(bool internal = false);

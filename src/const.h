@@ -522,9 +522,6 @@ enum PlayerFlags : uint64_t {
 #define CHANNEL_ADVERTISINGROOKGAARD 0x06
 #define CHANNEL_HELP 0x07
 #define CHANNEL_GAMEMASTER 0x08
-#ifdef COMODATO_CAST
-#define CHANNEL_CAST 0x09
-#endif
 #define CHANNEL_PRIVATE 0xFFFF
 
 //Reserved player storage key ranges

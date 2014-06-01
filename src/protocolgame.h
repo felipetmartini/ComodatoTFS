@@ -90,20 +90,7 @@ class ProtocolGame : public Protocol
 		const std::unordered_set<uint32_t>& getKnownCreatures() const {
 			return knownCreatureSet;
 		}
-#ifdef COMODATO_CAST
-		const std::string& getName() const {
-			return name;
-		}
-		void setName(const std::string& value) {
-			name = value;
-		}
-		bool isInCast() const {
-			return inCast;
-		}
-		void setInCast(bool value) {
-			inCast = value;
-		}
-#endif
+
 	private:
 		std::unordered_set<uint32_t> knownCreatureSet;
 
@@ -354,14 +341,10 @@ class ProtocolGame : public Protocol
 		static void addGameTaskInternal(bool droppable, uint32_t delay, const FunctionType&);
 
 		Player* player;
-#ifdef COMODATO_CAST
-		std::string name;
-#endif
+
 		uint32_t eventConnect;
 		uint16_t version;
-#ifdef COMODATO_CAST
-		bool inCast;
-#endif
+
 		uint32_t m_challengeTimestamp;
 		uint8_t m_challengeRandom;
 

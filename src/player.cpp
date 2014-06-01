@@ -51,26 +51,12 @@ uint32_t Player::playerAutoID = 0x10000000;
 Player::Player(ProtocolGame* p) :
 	Creature()
 {
-#ifdef COMODATO_CAST
-	clients.push_back(p);
-	isConnecting = false;
-#else
 	client = p;
 	isConnecting = false;
-#endif
 
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-		for (auto& client : clients) {
-			client->setPlayer(this);
-		}
-
-	}
-#else
 	if (client) {
 		client->setPlayer(this);
 	}
-#endif
 
 	accountNumber = 0;
 	setVocation(0);
@@ -195,11 +181,6 @@ Player::Player(ProtocolGame* p) :
 	nextUseStaminaTime = 0;
 
 	lastQuestlogUpdate = 0;
-#ifdef COMODATO_CAST
-	inCast = false;
-	views = 0;
-#endif
-
 }
 
 Player::~Player()
@@ -945,19 +926,11 @@ bool Player::getStorageValue(const uint32_t key, int32_t& value) const
 
 bool Player::canSee(const Position& pos) const
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-		return false;
-	}
-	return clients.front()->canSee(pos);
-}
-#else
 	if (!client) {
 		return false;
 	}
 	return client->canSee(pos);
 }
-#endif
 
 bool Player::canSeeCreature(const Creature* creature) const
 {
@@ -1091,15 +1064,8 @@ void Player::sendCancelMessage(ReturnValue message) const
 
 void Player::sendStats()
 {
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-		for (auto& client : clients) {
-			client->sendStats();
-		}
-#else
 	if (client) {
 		client->sendStats();
-#endif
 		lastStatsTrainingTime = getOfflineTrainingTime() / 60 / 1000;
 	}
 }
@@ -1111,15 +1077,8 @@ void Player::sendPing()
 	bool hasLostConnection = false;
 	if ((timeNow - lastPing) >= 5000) {
 		lastPing = timeNow;
-#ifdef COMODATO_CAST
-		if (clients.size() > 0) {
-			for (auto& client : clients) {
-				client->sendPing();
-			}
-#else
 		if (client) {
 			client->sendPing();
-#endif
 		} else {
 			hasLostConnection = true;
 		}
@@ -1132,15 +1091,8 @@ void Player::sendPing()
 
 	if (noPongTime >= 60000 && canLogout()) {
 		if (g_creatureEvents->playerLogout(this)) {
-#ifdef COMODATO_CAST
-			if (clients.size() > 0) {
-				for (auto& client : clients) {
-					client->logout(true, true);
-				}
-#else
 			if (client) {
 				client->logout(true, true);
-#endif
 			} else {
 				g_game.removeCreature(this, true);
 			}
@@ -1189,34 +1141,20 @@ void Player::setEditHouse(House* house, uint32_t listId /*= 0*/)
 
 void Player::sendHouseWindow(House* house, uint32_t listId) const
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
 	std::string text;
 	if (house->getAccessList(listId, text)) {
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendHouseWindow(windowTextId, text);
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 }
 
 //container
 void Player::sendAddContainerItem(const Container* container, const Item* item)
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
@@ -1241,23 +1179,13 @@ void Player::sendAddContainerItem(const Container* container, const Item* item)
 			item = container->getItemByIndex(openContainer.index - 1);
 		}
 
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendAddContainerItem(it.first, slot, item);
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 }
 
 void Player::sendUpdateContainerItem(const Container* container, uint16_t slot, const Item* newItem)
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
@@ -1276,23 +1204,13 @@ void Player::sendUpdateContainerItem(const Container* container, uint16_t slot, 
 			continue;
 		}
 
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendUpdateContainerItem(it.first, slot, newItem);
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 }
 
 void Player::sendRemoveContainerItem(const Container* container, uint16_t slot)
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
@@ -1308,14 +1226,7 @@ void Player::sendRemoveContainerItem(const Container* container, uint16_t slot)
 			sendContainer(it.first, container, false, firstIndex);
 		}
 
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
-
 		client->sendRemoveContainerItem(it.first, std::max<uint16_t>(slot, firstIndex), container->getItemByIndex(container->capacity() + firstIndex));
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 }
 
@@ -1623,34 +1534,20 @@ void Player::onRemoveContainerItem(const Container* container, const Item* item)
 
 void Player::onCloseContainer(const Container* container)
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
 	for (const auto& it : openContainers) {
 		if (it.second.container == container) {
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 			client->sendCloseContainer(it.first);
-#ifdef COMODATO_CAST
-		}
-#endif
 		}
 	}
 }
 
 void Player::onSendContainer(const Container* container)
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
@@ -1658,13 +1555,7 @@ void Player::onSendContainer(const Container* container)
 	for (const auto& it : openContainers) {
 		const OpenContainer& openContainer = it.second;
 		if (openContainer.container == container) {
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 			client->sendContainer(it.first, container, hasParent, openContainer.index);
-#ifdef COMODATO_CAST
-		}
-#endif
 		}
 	}
 }
@@ -1773,20 +1664,10 @@ void Player::onThink(uint32_t interval)
 		const int32_t kickAfterMinutes = g_config.getNumber(ConfigManager::KICK_AFTER_MINUTES);
 		if (idleTime > (kickAfterMinutes * 60000) + 60000) {
 			kickPlayer(true);
-#ifdef COMODATO_CAST
-		} else if (clients.size() > 0 && idleTime == 60000 * kickAfterMinutes) {
-#else
 		} else if (client && idleTime == 60000 * kickAfterMinutes) {
-#endif
 			std::ostringstream ss;
 			ss << "You have been idle for " << kickAfterMinutes << " minutes. You will be disconnected in one minute if you are still idle then.";
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 			client->sendTextMessage(MESSAGE_STATUS_WARNING, ss.str());
-#ifdef COMODATO_CAST
-			}
-#endif
 		}
 	}
 
@@ -2209,13 +2090,8 @@ BlockType_t Player::blockHit(Creature* attacker, CombatType_t combatType, int32_
 
 uint32_t Player::getIP() const
 {
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-		return clients.front()->getIP();
-#else
 	if (client) {
 		return client->getIP();
-#endif
 	}
 
 	return 0;
@@ -2478,19 +2354,8 @@ void Player::addList()
 void Player::kickPlayer(bool displayEffect)
 {
 	g_creatureEvents->playerLogout(this);
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-#else
 	if (client) {
-#endif
-
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->logout(displayEffect, true);
-#ifdef COMODATO_CAST
-		}
-#endif
 	} else {
 		g_game.removeCreature(this);
 	}
@@ -2498,11 +2363,7 @@ void Player::kickPlayer(bool displayEffect)
 
 void Player::notifyStatusChange(Player* loginPlayer, VipStatus_t status)
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
@@ -2511,30 +2372,12 @@ void Player::notifyStatusChange(Player* loginPlayer, VipStatus_t status)
 		return;
 	}
 
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 	client->sendUpdatedVIPStatus(loginPlayer->getGUID(), status);
-#ifdef COMODATO_CAST
-	}
-#endif
 
 	if (status == VIPSTATUS_ONLINE) {
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendTextMessage(MESSAGE_STATUS_SMALL, (loginPlayer->getName() + " has logged in."));
-#ifdef COMODATO_CAST
-	}
-#endif
 	} else if (status == VIPSTATUS_OFFLINE) {
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendTextMessage(MESSAGE_STATUS_SMALL, (loginPlayer->getName() + " has logged out."));
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 }
 
@@ -2570,19 +2413,8 @@ bool Player::addVIP(uint32_t _guid, const std::string& name, VipStatus_t status)
 
 	IOLoginData::addVIPEntry(accountNumber, _guid, "", 0, false);
 
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-#else
 	if (client) {
-#endif
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendVIP(_guid, name, "", 0, false, status);
-#ifdef COMODATO_CAST
-		}
-#endif
-
 	}
 
 	return true;
@@ -2636,19 +2468,8 @@ void Player::autoCloseContainers(const Container* container)
 
 	for (uint32_t containerId : closeList) {
 		closeContainer(containerId);
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-#else
 		if (client) {
-#endif
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 			client->sendCloseContainer(containerId);
-#ifdef COMODATO_CAST
-		}
-#endif
-
 		}
 	}
 }
@@ -3442,18 +3263,8 @@ void Player::updateSaleShopList(uint32_t itemId)
 		return;
 	}
 
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-#else
 	if (client) {
-#endif
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendSaleItemList(shopItemList);
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 }
 
@@ -4218,20 +4029,10 @@ void Player::addUnjustifiedDead(const Player* attacked)
 		return;
 	}
 
-#ifdef COMODATO_CAST
-	if (clients.size() > 0) {
-#else
 	if (client) {
-#endif
 		std::ostringstream ss;
 		ss << "Warning! The murder of " << attacked->getName() << " was not justified.";
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendTextMessage(MESSAGE_EVENT_ADVANCE, ss.str());
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 
 	skullTicks += g_config.getNumber(ConfigManager::FRAG_TIME);
@@ -4307,25 +4108,6 @@ void Player::learnInstantSpell(const std::string& name)
 	}
 }
 
-#ifdef COMODATO_CAST
-void Player::setInCast(bool value)
-{
-	if (inCast == value)
-		return;
-
-	inCast = value;
-	if (!inCast) {
-		while (clients.size() > 1) {
-			clients.back()->disconnect();
-			clients.pop_back();
-		}
-	}
-	else {
-		sendChannel(CHANNEL_CAST, "Live cast", nullptr, nullptr);
-	}
-}
-
-#endif
 void Player::forgetInstantSpell(const std::string& name)
 {
 	learnedInstantSpellList.remove(name);
@@ -4842,22 +4624,12 @@ void Player::onModalWindowHandled(uint32_t modalWindowId)
 
 void Player::sendModalWindow(const ModalWindow& modalWindow)
 {
-#ifdef COMODATO_CAST
-	if (clients.size() == 0) {
-#else
 	if (!client) {
-#endif
 		return;
 	}
 
 	modalWindows.push_front(modalWindow.id);
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 	client->sendModalWindow(modalWindow);
-#ifdef COMODATO_CAST
-	}
-#endif
 }
 
 void Player::clearModalWindows()
@@ -4952,19 +4724,8 @@ void Player::sendClosePrivate(uint16_t channelId)
 		g_chat.removeUserFromChannel(*this, channelId);
 	}
 
-#ifdef COMODATO_CAST
-		if (clients.size() > 0) {
-#else
 	if (client) {
-#endif
-
-#ifdef COMODATO_CAST
-		for (auto& client : clients) {
-#endif
 		client->sendClosePrivate(channelId);
-#ifdef COMODATO_CAST
-		}
-#endif
 	}
 }
 
