@@ -52,7 +52,7 @@ Player::Player(ProtocolGame* p) :
 	Creature()
 {
 #ifdef COMODATO_CAST
-	clients = p;
+	clients.push_back = p;
 	isConnecting = false;
 #else
 	client = p;
