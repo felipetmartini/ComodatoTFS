@@ -206,7 +206,7 @@ void ProtocolStatus::sendInfo(uint16_t requestedInfo, const std::string& charact
 	if (requestedInfo & REQUEST_EXT_PLAYERS_INFO) {
 		output->AddByte(0x21); // players info - online players list
 
-		const auto& players = g_game.getPlayers();
+		auto players = g_game.getPlayers();
 		output->add<uint32_t>(players.size());
 		for (const auto& it : players) {
 			output->AddString(it.second->getName());
