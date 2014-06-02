@@ -85,10 +85,11 @@ ProtocolGame::~ProtocolGame()
 	player = nullptr;
 }
 
-void ProtocolGame::setPlayer(Player* p)
+void ProtocolGame::setPlayer(Player* push_back(p))
 {
-	player = (p);
+	player = push_back(p);
 }
+
 
 void ProtocolGame::releaseProtocol()
 {
