@@ -107,8 +107,9 @@ void ProtocolGame::releaseProtocol()
 #else
 	if (player && player->client == this) {
 		player->client = nullptr;
-	}
 #endif
+	}
+
 	Protocol::releaseProtocol();
 }
 

@@ -969,21 +969,14 @@ class Player : public Creature, public Cylinder
 					}
 #endif
 			} else {
-#ifdef COMODATO_CAST
-					for (auto& client : clients) {
-#endif
 				int32_t stackpos = creature->getTile()->getStackposOfCreature(this, creature);
 				if (stackpos == -1) {
 					return;
-#ifdef COMODATO_CAST
-					}
-#endif
                                  }
 
 				if (visible) {
 #ifdef COMODATO_CAST
 					for (auto& client : clients) {
-					int32_t stackpos = creature->getTile()->getStackposOfCreature(this, creature);
 #endif
 					client->sendAddCreature(creature, creature->getPosition(), stackpos, false);
 #ifdef COMODATO_CAST
@@ -992,7 +985,6 @@ class Player : public Creature, public Cylinder
 				} else {
 #ifdef COMODATO_CAST
 					for (auto& client : clients) {
-						int32_t stackpos = creature->getTile()->getStackposOfCreature(this, creature);
 #endif
 					client->sendRemoveTileThing(creature->getPosition(), stackpos);
 #ifdef COMODATO_CAST
