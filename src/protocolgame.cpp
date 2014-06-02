@@ -87,7 +87,7 @@ ProtocolGame::~ProtocolGame()
 
 void ProtocolGame::setPlayer(Player* p)
 {
-	player = (p);
+	player = p;
 }
 
 void ProtocolGame::releaseProtocol()
