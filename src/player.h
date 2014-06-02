@@ -1939,7 +1939,9 @@ class Player : public Creature, public Cylinder
 		Npc* shopOwner;
 		Party* party;
 		Player* tradePartner;
+#ifndef COMODATO_CAST
 		ProtocolGame* client;
+#endif
 		SchedulerTask* walkTask;
 		Town* town;
 		Vocation* vocation;
