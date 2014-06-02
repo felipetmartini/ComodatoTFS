@@ -427,7 +427,7 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 	if (!accountName.empty()) {
 		dispatchDisconnectClient("Account name or password is not correct.");
 		return;
-	else {
+	} else {
 		player = g_game.getPlayerByName(characterName);
 		player->clients.push_back(this);
 
@@ -446,6 +446,7 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 			}
 		}
 	}
+	return;
 #endif
 
 #undef dispatchDisconnectClient
