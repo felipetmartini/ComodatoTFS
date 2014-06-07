@@ -103,6 +103,7 @@ bool ConfigManager::load()
 	m_confString[WORLD_TYPE] = getGlobalString(L, "worldType", "pvp");
 
 	m_confInteger[MAX_PLAYERS] = getGlobalNumber(L, "maxPlayers");
+	m_confInteger[ON_PLAYERS] = getGlobalNumber(L, "onPlayers");
 	m_confInteger[PZ_LOCKED] = getGlobalNumber(L, "pzLocked", 60000);
 	m_confInteger[DEFAULT_DESPAWNRANGE] = getGlobalNumber(L, "deSpawnRange", 2);
 	m_confInteger[DEFAULT_DESPAWNRADIUS] = getGlobalNumber(L, "deSpawnRadius", 50);
